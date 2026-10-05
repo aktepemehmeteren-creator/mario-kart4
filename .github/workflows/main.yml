@@ -1,0 +1,33 @@
+name: Build PSP EBOOT.PBP
+
+on:
+  push:
+    branches: [ "main", "master" ]
+  pull_request:
+    branches: [ "main", "master" ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    # PSPSDK ortamını sağlayan Docker konteynerini kullanıyoruz
+    container:
+      image: pspdev/pspdev:latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Build Project with CMake
+        run: |
+          mkdir build && cd build
+          psp-cmake ..
+          make
+
+      - name: Upload EBOOT.PBP Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: MarioKartPSP-EBOOT
+          path: |
+            build/EBOOT.PBP
+            build/PARAM.SFO
